@@ -24,6 +24,7 @@ class Attendance extends Model
         'lecturer_verified',
         'student_id',
         'schedule_week_id',
+        'is_confirm'
     ];
 
     /**

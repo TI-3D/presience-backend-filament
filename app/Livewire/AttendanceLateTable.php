@@ -128,101 +128,24 @@ class AttendanceLateTable extends Component implements HasTable, HasForms
                                                 'sm' => 1,
                                                 'lg' => 1,
                                             ]),
-                                        // TextEntry::make('class')
-                                        //     ->label('Kelas')
-                                        //     ->default(fn() => $record->scheduleWeek->schedule->group->name)->columnSpan([
-                                        //         'sm' => 1,
-                                        //         'lg' => 1,
-                                        //     ]),
-
-                                        // TextEntry::make('course')
-                                        //     ->label('Mata Kuliah')
-                                        //     ->default(fn() => $record->scheduleWeek->schedule->course->name)->columnSpan([
-                                        //         'sm' => 1,
-                                        //         'lg' => 1,
-                                        //     ]),
-                                        // TextEntry::make('week')
-                                        //     ->label('Minggu')
-                                        //     ->default(fn() => $record->scheduleWeek->week->name)->columnSpan([
-                                        //         'sm' => 1,
-                                        //         'lg' => 1,
-                                        //     ]),
-                                        // TextEntry::make('type_permit')
-                                        //     ->label('Jenis Izin')
-                                        //     ->badge()
-                                        //     ->color('warning')
-                                        //     ->default(fn() => $record->permit->type_permit)->columnSpan([
-                                        //         'sm' => 1,
-                                        //         'lg' => 1,
-                                        //     ])->formatStateUsing(function ($state) {
-                                        //         if ($state === 'izin') {
-                                        //             return 'Izin';
-                                        //         } else if ($state === 'sakit') {
-                                        //             return 'Sakit';
-                                        //         }
-                                        //         // Customize badge text based on the 'status' value
-                                        //         return $state;
-                                        //     }),
-                                        // TextEntry::make('declaration')
-                                        //     ->label('Deskripsi')
-                                        //     ->default(fn() => $record->permit->description)->columnSpan([
-                                        //         'sm' => 1,
-                                        //         'lg' => 3,
-                                        //     ]),
-                                        // ImageEntry::make('header_image')->label('Dokumen')->columnSpan([
-                                        //     'sm' => 1,
-                                        //     'lg' => 3,
-                                        // ]),
-                                        // ImageEntry::make('header_image')
-                                        //     ->label('Dokumen')
-                                        //     ->default(fn() => $record->permit->evidence)
-                                        //     ->columnSpan([
-                                        //         'sm' => 1,
-                                        //         'lg' => 3,
-                                        //     ])
+                                        TextEntry::make('class')
+                                            ->label('Kelas')
+                                            ->default(fn() => $record->scheduleWeek->schedule->group->name)->columnSpan([
+                                                'sm' => 1,
+                                                'lg' => 1,
+                                            ]),
                                     ])
                             ];
                         }
                     )
-                // ->modalContent(function (Model $record) {
-                //     return;
-                // })
-                // ->modalActions([
-                //     Tables\Actions\Action::make('confirm')
-                //         ->label('Konfirmasi')
-                //         ->after(function () {
-                //             // Tutup modal setelah aksi selesai
-                //             return redirect(request()->header('Referer'));
-                //         })
-                //         ->action(function (Model $record, $action) {
-                //             $record->update(['status' => 'confirm']);
-
-                //             Notification::make()
-                //                 ->title('Berhasil konfirmasi')
-                //                 ->success()
-                //                 ->send();
-                //         })
-                //         ->color('primary'),
-                //     Tables\Actions\Action::make('decline')
-                //         ->label('Tolak')
-                //         ->after(function () {
-                //             return redirect(request()->header('Referer'));
-                //         })
-                //         ->action(function (Model $record) {
-                //             $record->update(['status' => 'decline']);
-
-                //             Notification::make()
-                //                 ->title('Berhasil membuka kelas online')
-                //                 ->success()
-                //                 ->send();
-                //         })
-                //         ->color('gray'),
-                // ]),
             ])
             ->query(fn() => Attendance::where('schedule_week_id', $this->scheduleWeekId)
-                ->whereBetween('sakit', [1, $courseTime - 1])
-                ->orWhereBetween('izin', [1, $courseTime - 1])
-                ->orWhereBetween('alpha', [1, $courseTime - 1])->with('student'));
+                ->where(function ($query) use ($courseTime) {
+                    $query->whereBetween('sakit', [1, $courseTime - 1])
+                        ->orWhereBetween('izin', [1, $courseTime - 1])
+                        ->orWhereBetween('alpha', [1, $courseTime - 1]);
+                })
+                ->with('student'));
     }
 
     public function render()

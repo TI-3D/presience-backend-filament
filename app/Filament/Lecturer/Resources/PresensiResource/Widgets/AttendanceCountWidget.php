@@ -40,12 +40,13 @@ class AttendanceCountWidget extends BaseWidget
             ->where('alpha', 0)
             ->count();
         $lateCount = Attendance::where('schedule_week_id', $this->scheduleWeekId)
-            ->whereBetween('sakit', [1, $courseTime-1])
-            ->orWhereBetween('izin', [1, $courseTime-1])
-            ->orWhereBetween('alpha', [1, $courseTime-1])
+            ->where(function ($query) use ($courseTime) {
+                $query->whereBetween('sakit', [1, $courseTime - 1])
+                    ->orWhereBetween('izin', [1, $courseTime - 1])
+                    ->orWhereBetween('alpha', [1, $courseTime - 1]);
+            })
             ->count();
         return [
-            // dd($this->scheduleWeekId),
             Stat::make('Mahasiswa Terlambat', $lateCount),
             Stat::make('Mahasiswa Sakit/Izin', $sakitIzinCount),
             Stat::make('Mahasiswa Hadir', $hadirCount),

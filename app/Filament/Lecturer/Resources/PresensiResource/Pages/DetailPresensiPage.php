@@ -58,23 +58,28 @@ class DetailPresensiPage extends Page
 
     public function getActions(): array
     {
-
         return [
-            Action::make('confirmAllPresensi')
+            // dd('ok'),
+
+            // Action::make('confirmAll')
+            //     ->label('Konfirmasi Presensi')
+            //     // ->requiresConfirmation()
+            //     ->action(function () {
+            //         dd('Function action dipanggil');
+            //     })
+
+            Action::make('confirmAll')
                 ->label('Konfirmasi Presensi')
                 ->color('primary')
-                ->extraAttributes(['class' => 'ml-auto']) // Align the button to the right
+                ->extraAttributes(['class' => 'ml-auto'])
                 ->action(function () {
                     $this->performConfirmationAction();
-                    // redirect()->route('filament.lecturer.resources.presensis.detail');
-                    // redirect()->route('filament.lecturer.resources.presensis.detail', ['scheduleWeekId' => $this->scheduleWeekId]);
-                })->requiresConfirmation()
+                    // redirect()->route('filament.lecturer.resources.presensis.detail',);
+                    redirect()->route('filament.lecturer.resources.presensis.index');
+                })
+                // ->requiresConfirmation()
                 ->color(Color::Indigo) // Button color
-                ->disabled(function () {
-                    // Periksa kolom is_confirm di tabel schedule_week
-                    $scheduleWeek = ScheduleWeek::find($this->scheduleWeekId);
-                    return $scheduleWeek && $scheduleWeek->is_confirm === true;
-                }),
+            // ->disabled(fn(Model $record) => $record->status === 'closed') // Disable if already closed
         ];
     }
 
@@ -128,9 +133,8 @@ class DetailPresensiPage extends Page
         try {
             // Get all attendance records for the given scheduleWeekId
             $attendances = Attendance::where('schedule_week_id', $this->scheduleWeekId)
-                ->with('student ') // Load relasi scheduleWeek
+                ->with('student') // Load relasi scheduleWeek
                 ->get();
-dd($attendances);
             // Update lecturer_verified and is_confirm in a transaction
             DB::transaction(function () use ($attendances) {
                 foreach ($attendances as $attendance) {
@@ -142,14 +146,9 @@ dd($attendances);
                         ->update(['lecturer_verified' => true]);
                 }
 
-                $scheduleWeek = $attendances->first()?->scheduleWeek;
-                if ($scheduleWeek) {
-                    $scheduleWeek->update([
-                        'is_confirm' => true,
-                    ]);
-                } else {
-                    throw new \Exception("ScheduleWeek tidak ditemukan untuk ScheduleWeekId: $this->scheduleWeekId");
-                }
+                $scheduleWeek = DB::table('schedule_weeks')
+                    ->where('id', $this->scheduleWeekId)
+                    ->update([ 'is_confirm' => true]);
             });
 
             // Send success notification
@@ -159,7 +158,6 @@ dd($attendances);
                 ->send();
         } catch (\Exception $e) {
             dd($e->getMessage());
-
         }
     }
 }
