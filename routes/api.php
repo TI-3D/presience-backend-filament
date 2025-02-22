@@ -10,7 +10,7 @@ use App\Http\Controllers\ScheduleController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\ApiMiddleware;
 
-Route::post('/users/login', [AuthenticationController::class, 'login'])->name('login');
+Route::post('/users/login', [AuthenticationController::class, 'login'])->middleware('throttle:5,1')->name('login');
 Route::post('/users/reftoken', [AuthenticationController::class, 'refToken'])->name('reftoken');
 Route::post('/forgot-password', [ResetPasswordController::class, 'passwordEmail']);
 
