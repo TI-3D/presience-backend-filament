@@ -15,7 +15,7 @@ class WeekSeeder extends Seeder
     public function run(): void
     {
         //
-        $startDate = Carbon::create(2024, 8, 26); // Tanggal mulai dari minggu pertama (21 Oktober 2024)
+        $startDate = Carbon::create(2025, 2, 24); // Tanggal mulai dari minggu pertama (21 Oktober 2024)
         $weeks = [];
 
         for ($i = 1; $i <= 17; $i++) {
