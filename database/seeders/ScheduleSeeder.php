@@ -68,7 +68,7 @@ class ScheduleSeeder extends Seeder
                 'lecturer_id' => 11,
                 'group_id' => 1,
                 'room_id' => 37,
-                'course_id' => 6,
+                'course_id' => 7,
             ],
             [
                 'day' => 'thursday',
@@ -168,7 +168,7 @@ class ScheduleSeeder extends Seeder
                 'lecturer_id' => 10,
                 'group_id' => 2,
                 'room_id' => 18,
-                'course_id' => 1,
+                'course_id' => 4,
             ],
             [
                 'day' => 'friday',
